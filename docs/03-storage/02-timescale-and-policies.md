@@ -178,7 +178,7 @@ CREATE TABLE history_15m (
 -- over a sliding window, plus an explicit range call after replay (same Admin().RefreshAggregates).
 ```
 
-What changes: no compression (TOAST does not help rows this small), so about **9x more disk** at the same retention (09 shows 644 GB for 10,000 tags typical over 400 days versus 74 GB). The backend is therefore suitable for meters, small plants and short retention, not for 10,000 tags and a year. The query layer is identical (it only needs `time_bucket` replaced by `date_bin`, PG 14+, which the generic SQL already uses where it does not need cagg-specific functions). `Capabilities()` reports `Compression: false, NativeAggregates: false`, and `skyrangerctl doctor` projects days-to-full accordingly.
+What changes: no compression (TOAST does not help rows this small), so about **9x more disk** at the same retention (09 shows about 645 GB for 10,000 tags typical over 400 days versus 74 GB). The backend is therefore suitable for meters, small plants and short retention, not for 10,000 tags and a year. The query layer is identical (it only needs `time_bucket` replaced by `date_bin`, PG 14+, which the generic SQL already uses where it does not need cagg-specific functions). `Capabilities()` reports `Compression: false, NativeAggregates: false`, and `skyrangerctl doctor` projects days-to-full accordingly.
 
 This backend is designed so a second implementation exists on paper and the interface (11) is proven against two shapes. It is implemented the first time a customer needs it.
 

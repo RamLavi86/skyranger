@@ -311,7 +311,7 @@ The compose file ([02-containers.md](../08-deployment/02-containers.md)) already
 | `fsync` | on (default; never off) | |
 | `wal_compression` | `on` | less WAL volume, modest CPU. Good on slow flash |
 | `random_page_cost` | `1.1` | SSD |
-| `max_connections` | `50` | pools total about 20 (section 10) |
+| `max_connections` | `50` | pools total 10 (section 10) |
 | `log_checkpoints`, `log_lock_waits`, `log_min_duration_statement=1s` | on | support bundle material |
 | `idle_in_transaction_session_timeout` | `60s` | a stuck API handler must not pin the vacuum horizon |
 | `max_slot_wal_keep_size` | `2GB` | T3 standby ([01-topologies.md](../08-deployment/01-topologies.md)): a dead standby with a replication slot would otherwise grow `pg_wal` until the disk is full. PG13+ parameter (UNVERIFIED exact semantics on the pinned version) |

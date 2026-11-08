@@ -113,7 +113,7 @@ The cap exists because the spool lives on the same disk as the database, and a s
 | `medium` | 4 GiB | same |
 | `large` | 8 GiB | same |
 
-Outage capacity at 48 B per sample (arithmetic in 09, section 7):
+Outage capacity at 48 B per sample (arithmetic in 09, section 6):
 
 | Scenario | Rows/day | Spool bytes/day | Cap | Outage the cap holds |
 |---|---|---|---|---|

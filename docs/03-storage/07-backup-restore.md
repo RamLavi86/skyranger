@@ -118,7 +118,7 @@ skyrangerctl config export > config.yaml                                   (05)
 \copy (SELECT * FROM pub.events ...) / pub.alarm_journal ...
 ```
 
-- A CSV row is about 90 to 100 bytes. 10,000 tags at the typical rate is about 1.1 GB of CSV per day (compresses roughly 8x with `zstd`). Full raw export of 400 days is therefore hundreds of GB for a large site: the tool supports `--since`, `--rollups-only`, and resumable per-month files. For the water meter the entire raw history is under 100 MB of CSV.
+- A CSV row is about 90 to 100 bytes. 10,000 tags at the typical rate is about 1.1 GB of CSV per day (compresses roughly 8x with `zstd`). Full raw export of 400 days is therefore hundreds of GB for a large site: the tool supports `--since`, `--rollups-only`, and resumable per-month files. For the water meter raw history is about 2 MB of CSV per day at the low profile (0.8 GB over 400 days) and about 17 MB per day at the high one (09).
 - A schema README (`export/README.md`) ships inside the export describing each file and column, quality codes (`quality_codes`), the encoding of `uint64` and `datetime` (01, section 4), and the meaning of `keepalive`.
 - A full `pg_dump` is **not** the exit format (it requires the same TimescaleDB to restore). It is a backup format. CSV (and optionally Parquet later) are exit formats.
 - The customer's own PostgreSQL (T2) means their DBA owns backups of the database (01-topologies); our backup command still dumps remotely by default, and the handover document states who is responsible.

@@ -200,6 +200,8 @@ Gateway-generated tags under `_system/historian/` (additive; `_system` paths may
 | `guard_dropped_total` | uint64 | flood guard |
 | `rejected_ts_total` | uint64 | sanity window |
 | `dedup_rows_total` | uint64 | conflicts on insert |
+| `rollup_lag_s` | uint64 | now minus the newest materialized `history_15m` bucket end (10, section 5; alarm above 2 h) |
+| `job_failing` | bool | any Timescale compression, retention or refresh job failing for over 1 h (02, section 7) |
 | `dead_letter_rows_total` | uint64 | poison rows |
 | `db_bytes`, `disk_used_pct` | uint64, float64 | 08-disk (`disk_used_pct` is already proposed by 07-security/08) |
 
