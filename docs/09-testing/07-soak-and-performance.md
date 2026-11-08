@@ -112,7 +112,7 @@ The soak judge reads two sources, both public: the Prometheus metrics endpoint (
 | History query latency p95 | soak client | per query | degradation over time |
 | CPU, per container | cgroup stats via cAdvisor (UNVERIFIED tool choice) or `docker stats` | 15 s | headroom |
 | Disk write bytes/day, SSD SMART wear indicators, temperature | `smartctl -a` (smartmontools), node exporter | 5 min | write amplification and thermal limits; **reported**, not gated in v1 |
-| CPU temperature, throttling | `/sys` thermal zones, `vcgencmd` not applicable on x86 | 1 min | throttling hides as latency |
+| CPU temperature, throttling | `/sys` thermal zones and CPU frequency counters | 1 min | throttling hides as latency |
 | Counts: restarts, reconnects, events by type, alarms by name | public API and events | 1 min | expected-vs-actual |
 | Log error lines | container logs, counted by level | continuous | new error classes |
 

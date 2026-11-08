@@ -28,6 +28,36 @@ Sky Ranger's business case is "a cheaper, open system that is as trustworthy as 
 | [11-evidence-pack.md](11-evidence-pack.md) | The customer-facing evidence pack: contents, format, how it is generated |
 | [12-ai-agent-guardrails.md](12-ai-agent-guardrails.md) | How AI agents are kept honest: protected tests, red-green proof, test-integrity check, mutation testing, forbidden patterns |
 
+## Scope coverage map
+
+| Scope item | Where |
+|---|---|
+| Test pyramid, layers, repo layout | this file |
+| Contract tests, golden files, property tests | 01 |
+| Driver conformance suite | 02 |
+| Device simulator | 03 |
+| Fault-injection catalogue | 04 |
+| Recorded capture and replay | 05 |
+| Docker Compose integration, in-process harness, HMI browser tests | 06 |
+| Soak, 10k and 100k tag performance and scale | 07 |
+| Chaos and power-cut testing on real edge hardware, ESP32 HIL | 08 |
+| Security testing (fuzzing, API, dependency and image scanning) | 09 |
+| CI pipeline, quality gates, "ships to a customer" checklist, FAT and SAT | 10 |
+| Customer-facing evidence pack and claims register | 11 |
+| AI coding agent guardrails (protected tests, red-green, mutation testing) | 12 |
+
+## Contract issues found by this area (consolidated; each is detailed in the file named)
+
+These are reported, not fixed here. The contracts in docs/00-contracts are binding until a human changes them with a decisions.md entry.
+
+1. `counter_total` and out-of-order samples with `modulus > 0` (01 Open question 1).
+2. Non-atomic evaluation of `boot_count` and `pulse_count` after a rebirth (01 Open question 2).
+3. NaN with a held last value: `value: null` or last value? (01 Open question 3).
+4. Gateway clock stepping backward freezes live values (04 F-CLK-04).
+5. After an `implausible` sample `last_raw` is set to the implausible value (04 F-CNT-03).
+6. A `boot_count` NVS commit lost to a power cut makes a reboot look like a rollover (08 Open question 1).
+7. Millisecond timestamp precision with `(tag_id, ts)` history key can collapse sub-millisecond samples (07 Open question 2).
+
 ## Principles
 
 1. **Ground truth beats eyeballing.** Every scenario has an oracle that knows the true answer: the simulator knows how many pulses it emitted, the hardware rig's pulse generator knows how many pulses it sent. Tests compare the gateway's `total_volume` against that number, exactly.
