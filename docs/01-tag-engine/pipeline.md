@@ -28,7 +28,7 @@ type slot struct {
 }
 
 type Store struct {
-    slots []slot                    // replaced (with carry-over) on each revision
+    slots []*slot                   // replaced on each revision; the same *slot pointers carry over (go-design.md section 2)
 }
 ```
 
@@ -49,7 +49,7 @@ Input: a `SampleBatch` from the driver host for one connection, already stamped 
 | 5 | Timestamp | Section 4 selects `ts`; `ts_source` and `ts_gateway` kept as received/stamped. |
 | 6 | Overlay | Clear `stale`, re-arm stale timer, set `lastSampleMono`. Compute effective quality (section 3). |
 | 7 | Order | If `ts < cur.TS` **and** `ts` came from the device clock: history-only (go to stage 10 with the sample, skip 8, 9, 11). |
-| 8 | Change detect | Changed if value differs (exact, type-aware; floats compared bitwise after scaling) or effective quality differs. Unchanged repeat: stop here (stale timer already reset; history `max_interval` handled by the history timer). |
+| 8 | Change detect | Changed if value differs (exact, type-aware; floats compared bitwise after scaling) or effective quality differs. Unchanged repeat: stop here (stale timer already reset; history `max_interval` handled by the history timer), except that dependents whose function declared this input `OnSample` are still marked dirty (derived.md section 4). |
 | 9 | Store | Build a new `*tag.Value`, `cur.Store()`. Mark every `Dependents[i]` dirty (derived.md section 4). |
 | 10 | History gate | Section 7. Non-blocking hand-off to `HistorySink`. |
 | 11 | Propagate | Deadband (section 6). If it passes: record `lastPropagated`, enqueue to the fan-out (subscriptions.md). Quality changes always pass. |

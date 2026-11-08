@@ -52,6 +52,17 @@ Read in order: README, registry, pipeline, derived, subscriptions, writes, go-de
 6. **Configuration is compiled outside the loop** into an immutable `Registry`, then swapped atomically inside it. Runtime state is keyed by `tag_id` and survives revisions unless a defined incompatible change occurs.
 7. **Writes are never queued or retried**; one in-flight write per tag; outcome reported as `skyranger.tag.write_completed.v1`. The displayed value only changes when the device reports it back.
 
+## Contract questions collected from all files
+
+| Where | Proposal (all additive unless noted) |
+|---|---|
+| registry.md | `_system` tags need `kind: system`; state the override merge rule (top-level replace) in tag-model.md section 10; `counter_discontinuity.kind: rebaseline` |
+| pipeline.md | NaN/Inf wording (hold last value); out-of-order rule only for device-clock timestamps; `scale` output restricted to `float64` |
+| derived.md | `liveness` heartbeat criterion relaxed to "any accepted sample"; document `rate` interpolation and freeze-on-outage; Sparkplug driver must keep one MQTT message in one `SampleBatch`; `sum`/`min`/`max`/`avg` built-ins over input lists |
+| subscriptions.md | `unknown_paths` in WS `ack`; `min_interval` floor of 100 ms |
+| writes.md | Meaning of Sparkplug write acknowledgement; optional idempotency key on write |
+| go-design.md | `ClassGood/ClassUncertain/ClassBad` constants in `pkg/tag` |
+
 ## Decisions made
 - Split the area into eight topic files plus this index; the water meter walkthrough is a separate file so it can serve as an acceptance test script.
 - The seven summary decisions above, detailed in the linked files.
