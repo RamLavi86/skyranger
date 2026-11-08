@@ -20,7 +20,7 @@ How user Python runs alongside the Go core, what it may touch, how it is trigger
 | [10-sdk-compat-licensing.md](10-sdk-compat-licensing.md) | Versioned SDK surfaces, compatibility and deprecation policy, open-core licensing considerations |
 | [11-phased-plan.md](11-phased-plan.md) | v1 minimal, v2 plugins, v3 SDK, with exit criteria |
 
-Read in order: README, 01, 03, 02, 04. The rest can be read as needed.
+Read in order: README, 01, 03, 02, 04. The rest can be read as needed. Phase mapping: files 01 to 07 are v1, 09 is v2 (and v3 for UI components), 10 and 11 span all phases, 08 is background. Unverified facts (Ignition details, seccomp library, performance figures, license facts) are marked UNVERIFIED in place.
 
 ## Architecture in one picture
 
@@ -67,10 +67,16 @@ Read in order: README, 01, 03, 02, 04. The rest can be read as needed.
 | P5 | tag-model.md section 1 `_system` tags | Add `_system/scripts/{name}/...` and `_system/script_pools/{pool}/...` | Health visibility |
 | P6 | tag-model.md section 8 / section 1 ("`_system` never in user config") | Allow alarm definitions that target `_system` tags (e.g. an `AlarmBinding` or a `system_alarms` block in `Gateway`) | Otherwise nobody can alarm on a failing script or a down driver |
 | P7 | tag-model.md section 4 `good_manual` | A memory-tag write by a script gets quality `good`, not `good_manual` (which means operator-set) | Reports must distinguish operator overrides from automation |
+| P8 | tag-model.md section 9 kinds; messages.md section 4 | v2: add `Plugin` (grants and settings, no code), `PluginTrust` file form; events `skyranger.plugin.*.v1`; `source` component `plugin-host` ([09-plugins.md](09-plugins.md)) | Plugin install state must be restorable and auditable |
+| P9 | api.md section 3 | v2: `/api/v1/plugins...` endpoints (admin) and `requested_by` form `plugin:{publisher}/{name}` ([09-plugins.md](09-plugins.md)) | Install, approve, enable, remove |
+
+Smaller additive items the files rely on (record with P2/P4): `warnings` array in the draft response (06); optional `metadata.id` (UUIDv7) on `Script` (06); script retention setting in `Gateway.spec` (05); `GET /config?layout=split` (06).
+
+**Where this area disagrees with a binding contract or another area's draft:** messages.md section 3 says the Python runtime uses REST for writes, and [../07-security/02-authn-authz.md](../07-security/02-authn-authz.md) (`svc-python-runtime`, role `operator`) builds on that. P1 replaces it; if P1 is rejected the fallback in [01-runtime.md](01-runtime.md) section 7 applies. The alarm area is asked to accept that `memory` tags written by scripts are the way to raise script-detected alarms ([02-script-api.md](02-script-api.md) section 3.4).
 
 ## Decisions made
 1. Area split into eleven files plus this index; runtime and triggers are the load-bearing ones.
-2. Seven contract proposals (P1 to P7) are listed here and nowhere silently assumed elsewhere; every file that depends on one says so.
+2. Nine contract proposals (P1 to P9) are listed here and nowhere silently assumed elsewhere; every file that depends on one says so.
 3. The scripts container is optional: a gateway without it is a supported, fully functional configuration with scripting unavailable.
 
 ## Alternatives rejected and why
@@ -78,6 +84,6 @@ Read in order: README, 01, 03, 02, 04. The rest can be read as needed.
 - **Designing plugins first**: the integrator phase needs scripting now; plugins are v2. Designing the plugin boundary as "always out of process" now is enough to avoid painting ourselves into a corner.
 
 ## Open questions
-- All seven contract proposals (P1 to P7) need an owner decision and a decisions.md entry.
+- All nine contract proposals (P1 to P9) need an owner decision and a decisions.md entry.
 - Security area (07-security) should run its planned STRIDE pass on the scripting boundary against [04-sandbox-and-permissions.md](04-sandbox-and-permissions.md).
 - Whether the scripts container is part of the default compose file or an opt-in profile (deployment area, 08-deployment).

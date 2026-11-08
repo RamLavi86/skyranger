@@ -233,6 +233,10 @@ def call(method: str, **args):
 | `skyrangerd` restarts | Normal restart | scriptd reconnects; in-flight runs are cancelled (worker killed); runs are **not** resumed |
 | Postgres down | Per core behavior | Run records buffered in memory (bounded), then dropped with a counter |
 
+## 7. Relationship to contract wording (P1)
+
+messages.md section 3 says "The Python scripting runtime will use the REST API for writes", and 07-security/02-authn-authz.md (`svc-python-runtime`, role `operator`) assumes that. P1 replaces this with the script host. Reasons: (1) tag-change triggers must not be lost to QoS 0 retained topics or 100 ms WebSocket batching (api.md section 6), because "run this when the total changes" needs the same in-process delivery the tag engine gives alarms; (2) per-run identity and per-script permissions are enforced where the data is, rather than trusting a long-lived `operator` API key held in a process that runs user code; (3) the worker needs no sockets at all. The REST API is unchanged; external Python clients use it. **Fallback if P1 is rejected:** scriptd becomes a REST/WS client with one API key per pool and enforces permissions itself; triggers consume `skyranger/v1/...` MQTT or WS. Weaker, and documented as a degraded mode only.
+
 ## Decisions made
 1. CPython 3 in separate worker processes inside a separate network-less container; no embedded interpreter in `skyrangerd`.
 2. A small Go supervisor (`skyranger-scriptd`) per pool; workers are pooled, recycled, and killed with `SIGKILL` on timeout or memory excess. A soft in-Python timeout fires first so well-behaved scripts unwind with a clear error.
@@ -251,10 +255,6 @@ def call(method: str, **args):
 - **Python as a REST/WebSocket client (original contract wording)**: see section 7 and P1; loses tag-change events under load and cannot give per-run identity without extra machinery.
 - **gRPC bidirectional stream for everything**: harder to debug than unary calls plus one server stream; correlation logic for no gain.
 - **Threads or asyncio in user scripts**: complicates timeouts and the single-pipe protocol. Scripts are synchronous run-to-completion handlers. `threading` is not importable by user code (see 04).
-
-## 7. Relationship to contract wording (P1)
-
-messages.md section 3 says "The Python scripting runtime will use the REST API for writes", and 07-security/02-authn-authz.md (`svc-python-runtime`, role `operator`) assumes that. P1 replaces this with the script host. Reasons: (1) tag-change triggers must not be lost to QoS 0 retained topics or 100 ms WebSocket batching (api.md section 6), because "run this when the total changes" needs the same in-process delivery the tag engine gives alarms; (2) per-run identity and per-script permissions are enforced where the data is, rather than trusting a long-lived `operator` API key held in a process that runs user code; (3) the worker needs no sockets at all. The REST API is unchanged; external Python clients use it. **Fallback if P1 is rejected:** scriptd becomes a REST/WS client with one API key per pool and enforces permissions itself; triggers consume `skyranger/v1/...` MQTT or WS. Weaker, and documented as a degraded mode only.
 
 ## Open questions
 1. P1 needs an owner decision and a decisions.md entry; 07-security/02 must then drop the `svc-python-runtime` REST key.
