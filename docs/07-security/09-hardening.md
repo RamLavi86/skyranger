@@ -9,7 +9,7 @@ Baseline target: Debian stable (current release at time of build) on x86_64 or A
 | Firmware | UEFI Secure Boot on, BIOS/UEFI password set, boot from USB/network disabled | vendor setup; recorded in commissioning report |
 | Disk | Full-disk encryption LUKS2, unlock by TPM2 (+ recovery key in recovery kit) | `systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/nvme0n1p3` (PCR choice UNVERIFIED per platform) |
 | Packages | Minimal install: no desktop, no compilers, no `telnet`, `ftp`, `rsh`, no remote desktop tools | debootstrap/preseed list maintained in repo |
-| Users | No password login for any account; root locked; one admin account `sradmin` with SSH key only and sudo | `passwd -l root`; `/etc/ssh/sshd_config.d/skyranger.conf` below |
+| Users | No password login over the network for any account; root locked; one admin account `sradmin` with SSH key only and sudo | `passwd -l root`; `/etc/ssh/sshd_config.d/skyranger.conf` below |
 | SSH | Optional; key-only, no root, limited to mgmt subnet, `AllowUsers sradmin` | see below |
 | Firewall | nftables policy from 05 section 4, loaded at boot before network-online | `nftables.service` enabled |
 | Kernel | sysctl hardening below; unused modules blacklisted (`usb-storage` optional: needed for USB update bundles, so mounted only by the updater via a udev rule) | `/etc/sysctl.d/90-skyranger.conf` |
@@ -17,7 +17,7 @@ Baseline target: Debian stable (current release at time of build) on x86_64 or A
 | Logging | journald persistent, size-capped; forwarded with audit (08) if configured | `SystemMaxUse=1G` |
 | Updates | Security updates in maintenance windows, audited (07) | |
 | Services | Only: `sshd` (optional), `chronyd`, container runtime, `skyranger-updater`, `skyranger-netd` | `systemctl list-unit-files --state=enabled` checked in 14 |
-| Physical | Box in locked cabinet; unused USB ports blocked or disabled in BIOS; serial console requires the `sradmin` password-less key? No: serial console login uses a local password stored only in the recovery kit | |
+| Physical | Box in locked cabinet; unused USB ports blocked or disabled in BIOS; serial and local console login requires a local console password stored only in the recovery kit (the one password login that exists, console only, never over the network) | |
 
 ```conf
 # /etc/ssh/sshd_config.d/skyranger.conf

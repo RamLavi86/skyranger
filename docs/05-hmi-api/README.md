@@ -49,3 +49,6 @@ The HMI is a static single-page app served by `skyrangerd`, built from an npm-wo
   5. `history` (mode, `max_interval`) in the tag definition response, needed to draw gaps correctly (03, 08).
   6. Subscribing to all alarms (`prefix: ""` or omitted) on WebSocket (08).
   7. Localized tag `display_name` (07).
+  8. `GET/PUT /users/me/preferences` (08 section 5).
+  9. Trend helpers: `agg=minmax`, `points=N` on `/history` (08 section 7).
+  10. Server-enforced write step-up: `POST /auth/reauth`, `X-Reauth-Token`, `write_requires_reauth` (08 section 10; security area co-owns).
