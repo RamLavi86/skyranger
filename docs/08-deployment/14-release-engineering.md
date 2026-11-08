@@ -122,7 +122,7 @@ Two separate trust chains, matching [03-packaging-and-hardware.md](03-packaging-
 
 | Chain | Signs | Algorithm and tool | Verified by |
 |---|---|---|---|
-| **Release signing key** | `manifest.json`, the bundle tar, and the fleet's signed desired-state documents (08) use a different key (see 08) | Ed25519, `minisign` (simple, one small file, verifiable offline with a public key embedded in `skyrangerctl` and `install.sh`) | `install.sh`, `skyrangerctl install/update/preflight` |
+| **Release signing key** | `manifest.json`, the bundle tar, `advisories.json`. (Fleet desired-state documents use a separate fleet key, see [08-fleet.md](08-fleet.md).) | Ed25519, `minisign` (simple, one small file, verifiable offline with a public key embedded in `skyrangerctl` and `install.sh`) | `install.sh`, `skyrangerctl install/update/preflight` |
 | **RAUC bundle CA** (appliance only) | RAUC OS bundles | X.509 per RAUC | RAUC on the device |
 
 Decision between minisign and cosign: 04 left it open. We choose **minisign for bundles and manifests**: no transparency log or network dependency to verify at an air-gapped site, a signature is one text file. cosign is better for per-image signatures in registries; we may also sign images with cosign for customers who run their own admission policy, but the install path never depends on it.
