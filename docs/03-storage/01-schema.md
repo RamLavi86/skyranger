@@ -20,6 +20,7 @@ One migration history, many semantic owners.
 | `notification_outbox` | no | alarm engine (06-notifications) | warm | DDL stays in the alarm area, but it is created by this area's migration runner |
 | `config_revisions`, `config_objects`, `config_head`, `config_drafts` | [05](05-config-storage.md) | tag-model.md section 9, api.md | cold | |
 | `audit_log` | [07-security/08](../07-security/08-audit-logging.md) | security | cold | not redefined here, see [06](06-events-alarms-audit.md) |
+| `forward_cursors` | [04](04-store-and-forward.md) section 8 | storage / cloud sync | cold | per-destination forward position |
 | `discovered_devices` | yes | messages.md section 7 | cold | |
 | `users`, `api_keys`, `sessions` | no | security (02-authn-authz) | cold | |
 | `quality_codes` | yes | tag-model.md section 4 | static | reference data for SQL users |
@@ -172,7 +173,7 @@ CREATE TABLE memory_values (
 CREATE TABLE events (
   id       uuid        NOT NULL,                 -- CloudEvents id, UUIDv7
   time     timestamptz NOT NULL,
-  type     text        NOT NULL,                 -- 'skyranger.alarm.state_changed.v1'
+  type     text        COLLATE "C" NOT NULL,     -- 'skyranger.alarm.state_changed.v1'; C collation so prefix ranges work
   source   text        NOT NULL,                 -- '/gateways/gw01/alarm-engine'
   subject  text        COLLATE "C",              -- tag path or resource id
   tag_id   uuid,                                 -- extracted from data when present, for tag-scoped queries
