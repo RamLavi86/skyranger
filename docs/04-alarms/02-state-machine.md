@@ -104,7 +104,7 @@ Flag inputs (state unchanged, `seq++`, journal row, `state_changed` event with `
 | `unshelve(actor)` | shelved | `shelved_until = null` | if still `active_unacked`: re-annunciate (notify `unshelve`); if `cleared_unacked`: moved to `normal` with `acked_by = system:unshelve` (nobody should ack an alarm they chose not to see) |
 | `shelve_expired` (timer) | shelved | as unshelve | actor `system:shelve_expiry`; as above |
 | `suppress_on(reason)` | `suppress_when` evaluates true | `suppressed = true` | annunciation withdrawn; escalation cancelled |
-| `suppress_off` | `suppress_release_delay` elapsed | `suppressed = false` | if still active: re-annunciate with `cause: unsuppressed` |
+| `suppress_off` | `suppress_release_delay` elapsed | `suppressed = false` | if still `active_unacked`: re-annunciate with `cause: unsuppressed`; if `cleared_unacked`: moved to `normal` with `acked_by = system:unsuppress` (the operator never saw it, as with unshelve) |
 | `chatter_on` / `chatter_off` | detection (04) | `chattering` | one `chatter_start` notification, then digest |
 | `hold_on` / `hold_off` | input quality unusable / usable | `held` | see section 4 |
 

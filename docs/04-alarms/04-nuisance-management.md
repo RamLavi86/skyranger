@@ -112,7 +112,7 @@ Evaluation:
 - A suppression tag with **unusable quality** counts as `false` (not suppressed). A suppression that cannot be proven does not hide an alarm. Fail loud.
 - `suppress_on` the instant any item is true; `suppress_off` only after all items are false for `suppress_release_delay`, so a restart sequence does not flash the alarm.
 - While suppressed, the alarm's state machine **continues to run** (02). Suppressed alarms appear in a "suppressed" list, with `suppressed_reason` (the item that matched, human readable: `connection_down`, `irrigation_active`).
-- When suppression ends and the alarm is still active, it re-annunciates (`cause: unsuppressed`, notifies as an activation). The operator is told about a condition that outlasted its excuse.
+- When suppression ends and the alarm is still active, it re-annunciates (`cause: unsuppressed`, notifies as an activation). The operator is told about a condition that outlasted its excuse. If it returned to normal while suppressed (`cleared_unacked`), it closes with `acked_by = system:unsuppress`; the journal keeps the whole episode.
 - Rationalization requirement: every `suppress_when` must be explainable in one sentence; the validator warns if `rationale` is missing on an alarm that has `suppress_when`.
 
 Must never: suppress alarms of `class: safety` (validation error), hide the **cause** alarm (the `not_connected` link alarm is never suppressed by the thing it causes; the validator rejects suppression cycles and a suppression tag that is the alarm's own tag), or evaluate through a reference to another alarm's *state* (v1 uses tag values only, which is why the dependency is explicit and testable).

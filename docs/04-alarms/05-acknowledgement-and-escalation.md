@@ -8,7 +8,7 @@ Acknowledgement is the one step that ties the alarm system to a human. It is the
 |---|---|
 | What is acked | The current activation (`active_unacked` to `active_acked`) or the return to normal (`cleared_unacked` to `normal`). Transitions in 02 section 3 rows 2 and 5 |
 | Who | Role `operator` or above (api.md), and at least the alarm's `ack_role` (`operator` default, `engineer` optional). Roles are cumulative so an engineer may ack an operator alarm |
-| Actor identity | The authenticated principal, recorded as `user:{name}` or `apikey:{name}`. System actors: `system:unshelve`, `system:shelve_expiry`, `system:config`. Nobody acks as anonymous |
+| Actor identity | The authenticated principal, recorded as `user:{name}` or `apikey:{name}`. System actors: `system:unshelve`, `system:unsuppress`, `system:shelve_expiry`, `system:config`. Nobody acks as anonymous |
 | Comment | Optional, except severities listed in `Gateway.spec.alarms.ack_comment_required` (default `[critical]`), where an empty comment is rejected with `422 validation_failed` |
 | Where | REST `POST /alarms/{alarm_id}/ack` and bulk `POST /alarms/ack` (api.md). No command topic on MQTT (messages.md s3). No SMS-reply acknowledgement (section 5) |
 | Idempotent | Acking something not ackable returns `200` with `result: noop` per item; retries are safe |
